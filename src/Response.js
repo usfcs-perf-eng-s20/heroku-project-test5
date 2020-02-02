@@ -1,37 +1,3 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-const successStyle = {
-  backgroundColor: 'chartreuse',
-}
-
-const failStyle = {
-  backgroundColor: 'red',
-}
-
-function renderImage(host, id) {
-  const c = host + id
-  return (
-      <img src={c} />
-    );
-}
-
-function renderType(type) {
-  if (type == 'O') {
-    return (<td>Outgoing</td>);
-  } else {
-    return (<td>Incoming</td>);
-  }
-}
-
-function renderColor(accepted) {
-  if (accepted) {
-    return <td style={successStyle}></td>
-  } else {
-    return <td style={failStyle}></td>
-  }
-}
 
 class MyComponent extends React.Component {
   constructor(props) {
@@ -44,13 +10,13 @@ class MyComponent extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:8080/5dd20dafd52ccf2697896d38")
+    fetch("http://localhost:8080/5dd191e362496912a0065c0a")
       .then(res => res.json())
       .then(
         (result) => {
           this.setState({
             isLoaded: true,
-            response: result
+            response: result.response
           });
         },
         // Note: it's important to handle errors here
@@ -66,18 +32,17 @@ class MyComponent extends React.Component {
   }
 
   render() {
-    const { error, isLoaded, response } = this.state;
+    const { error, isLoaded, items } = this.state;
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
       return <div>Loading...</div>;
     } else {
       return (
-        <div>
         <table>
           <tr>
             <td><b>Id: </b></td>
-            <td>{response.idString}</td>
+            <td>{response.id}</td>
           </tr>
           <tr>
             <td><b>EdgeX Id: </b></td>
@@ -85,11 +50,11 @@ class MyComponent extends React.Component {
           </tr>
           <tr>
             <td><b>Identity: </b></td>
-            <td>{response.identityCapital}</td>
+            <td>response.identity}</td>
           </tr>
           <tr>
             <td><b>Location: </b></td>
-            <td>{response.locationCapital}</td>
+            <td>{response.location}</td>
           </tr>
           <tr>
             <td><b>Device: </b></td>
@@ -97,7 +62,11 @@ class MyComponent extends React.Component {
           </tr>
           <tr>
             <td><b>Type: </b></td>
-            {renderType(response.typeCapital)}
+            if ({response.typeCapital} == 'O') {
+              <td>Outgoing</td>
+            } else {
+              <td>Incoming</td>
+            }
           </tr>
           <tr>
             <td><b>Time: </b></td>
@@ -105,24 +74,15 @@ class MyComponent extends React.Component {
           </tr>
           <tr>
             <td><b>Accepted: </b></td>
-            {renderColor(response.accepted)}
+            if ({response.accepted}) {
+              <td style="background-color:chartreuse"></td>
+            } else {
+              <td style="background-color:red"></td>
+            }
           </tr>
         </table>
-        {renderImage('http://localhost:8080/files/', response.idString)}
-      </div>
+        <img alt={response.identity} src='localhost:8080/files/' + {response.id} />
       );
     }
   }
 }
-
-function App() { 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <MyComponent />
-      </header>
-    </div>
-  );
-}
-
-export default App;
